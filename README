@@ -1,0 +1,58 @@
+===
+libdrpc
+===
+What is it?
+This is a port of Android librpc to more regular libc versions 
+(should build with musl, uclibc, or (e)glibc; klibc and dietlibc might work).
+It needs <linux/poll.h> for POLLRDHUP; at this point musl does not define 
+this macro under any condition, and Android <poll.h> uses <linux/poll.h>.
+
+partwake.c, which is not built, contains partial wakelock support.
+If you want this, you will need to port libpower.
+
+Why?
+The standard solution for RPC outside libc, libtirpc, really isn't:
+it expects several headers in rpcsvc/ that it doesn't provide, and needs NIS.
+The build system is enough of a maze that it was faster to port librpc from 
+Android than to fish the proper code out of glibc and patch it into libtirpc.
+
+I could probably have used OpenBSD's xdr/, yp/, and rpc/ source 
+(from /usr/src/lib/libc) instead, but this was faster to get and I knew it 
+would work on Linux. If someone ports OpenBSD's RPC implementation, I'll 
+deprecate this.
+
+How can I use this?
+It's Apache licensed, so just about however you want.
+This does have one limitation inherited from Android: only one outstanding 
+RPC request is permitted at one time.
+
+To build all libraries with gcc, type "make CC=gcc".
+(CC defaults to musl-gcc)
+
+libdrpc.a and libdrpc.so are the targets to use for building static and shared
+libraries. Installation targets are install, insthdr (installs the headers), 
+inst-sh (installs shared libraries), and inst-static (installs libdrpc.a).
+
+Default values for variables that affect compilation and  installation:
+CC=musl-gcc
+CFLAGS+=-D_BSD_SOURCE -D_XOPEN_SOURCE=600 -I. -I./rpc -DRPC_OFFSET=0
+PREFIX?=/usr/local
+INCDIR?=${PREFIX}/include/drpc
+LIBDIR?=${PREFIX}/lib
+SYSLIBDIR?=${LIBDIR}
+
+If you use the default install directories, you will need these changes:
+CPPFLAGS+=	-I/usr/local/include/drpc
+LDFLAGS	+=	-L/usr/local/lib -ldrpc
+
+How can I help?
+-If you add new functions, please add them to new source files. The existing
+structure bloats statically linked binaries. (LTO may be able to partially make 
+up for this, but optimizing for LTO is self-defeating)
+-If you want to adjust the makefile, please respect the .POSIX: rule!
+I'm aiming for a Makefile that could be used with any POSIX-compatible make.
+-Patches welcome, as long as there's a reason for them.
+-Yes, splitting up the source code for better behavior when static linking
+is desirable. Just remember the copyright headers.
+-Make sure changes are under a license compatible with the Apache license:
+permissive with no advertising clause.
