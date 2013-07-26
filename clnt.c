@@ -15,7 +15,6 @@
 
 #include <signal.h>
 #include <poll.h>
-#include <linux/poll.h>
 
 
 struct CLIENT {
