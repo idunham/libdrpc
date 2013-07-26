@@ -72,7 +72,7 @@
 
 #ifndef _RPC_PMAPPROT_H
 #define _RPC_PMAPPROT_H
-#include <stdbool.h>
+#include <rpc/types.h>
 
 #define PMAPPORT		((unsigned short)111)
 #define PMAPPROG		((unsigned long)100000)
