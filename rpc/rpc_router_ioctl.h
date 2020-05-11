@@ -18,7 +18,11 @@
 #ifndef RPC_IOCTL_H
 #define RPC_IOCTL_H
 
+#if defined(__linux__)
 #include <linux/ioctl.h>
+#elif defined(__HAIKU__)
+#include <sys/ioccom.h>
+#endif
 
 struct rpcrouter_ioctl_server_args {
         uint32_t prog;

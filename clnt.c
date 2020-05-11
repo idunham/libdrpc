@@ -16,6 +16,11 @@
 #include <signal.h>
 #include <poll.h>
 
+// If POLLRDHUP not supported, ignore
+#ifndef POLLRDHUP
+#warning POLLRDHUP not available on this system. Skipping.
+#define POLLRDHUP 0
+#endif
 
 struct CLIENT {
     xdr_s_type *xdr;
